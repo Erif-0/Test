@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Episode Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #1a1a1a;
+      color: white;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('e5bec-17047474447061-1920.webp'); /* Replace with your image */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px);
+      z-index: -1; /* Ensure it stays behind the main content */
+    }
+    .container {
+      display: flex;
+      width: 80%;
+      max-width: 1200px;
+      background-color: #222;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .episodes-sidebar {
+      width: 250px;
+      background-color: #2a2a2a;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .episodes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: #bbb;
+    }
+    .episodes-header input {
+      width: 100%;
+      padding: 5px;
+      background-color: #333;
+      border: 1px solid #444;
+      color: white;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .episodes-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .episode-button {
+      background-color: #444;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .episode-button:hover {
+      background-color: #0f3571;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .episode-button.active {
+      background-color: #002754;
+    }
+    .episode-button.watched {
+      background-color: #006273;
+    }
+    .video-container {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: black;
+    }
+    .video-iframe {
+      width: 100%;
+      max-width: 800px;
+      height: 450px; /* 16:9 aspect ratio */
+      border: none;
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+<div class="background"></div>
+ 
+<div class="container">
+  <div class="episodes-sidebar">
+    <div class="episodes-header">
+      <span>List of episodes:</span>
+      <input type="text" placeholder="Number of Ep" oninput="filterEpisodes(this.value)">
+    </div>
+    
+    <div class="episodes-grid">
+      <!-- Generate episode buttons dynamically here -->
+      <button class="episode-button" onclick="loadEpisode(1)">1</button>
+      <button class="episode-button" onclick="loadEpisode(2)">2</button>
+      <button class="episode-button" onclick="loadEpisode(3)">3</button>
+      <button class="episode-button" onclick="loadEpisode(4)">4</button>
+      <button class="episode-button" onclick="loadEpisode(5)">5</button>
+      <button class="episode-button" onclick="loadEpisode(6)">6</button>
+      <button class="episode-button" onclick="loadEpisode(7)">7</button>
+      <button class="episode-button" onclick="loadEpisode(8)">8</button>
+      <button class="episode-button" onclick="loadEpisode(9)">9</button>
+      <button class="episode-button" onclick="loadEpisode(10)">10</button>
+      <button class="episode-button" onclick="loadEpisode(11)">11</button>
+      <button class="episode-button" onclick="loadEpisode(12)">12</button>
+      <button class="episode-button" onclick="loadEpisode(13)">13</button>
+      <button class="episode-button" onclick="loadEpisode(14)">14</button>
+      <button class="episode-button" onclick="loadEpisode(15)">15</button>
+      <button class="episode-button" onclick="loadEpisode(16)">16</button>
+      <button class="episode-button" onclick="loadEpisode(17)">17</button>
+      <button class="episode-button" onclick="loadEpisode(18)">18</button>
+      <button class="episode-button" onclick="loadEpisode(19)">19</button>
+      
+      <!-- Add more buttons as needed up to desired number of episodes -->
+    </div>
+    <h1 id="currentEpisode">Egghead: Not Selected</h1>
+  </div>
+
+  <div class="video-container">
+    <!-- Video player -->
+    <iframe id="videoPlayer" class="video-iframe" src="" allowfullscreen></iframe>
+  </div>
+</div>
+<script>
+  const episodes = {
+    1: "https://rumble.com/embed/v5euq6t/?pub=3wrehx",
+    2: "https://rumble.com/embed/v5jc24n/?pub=3wrehx",
+    3: "https://rumble.com/embed/v5jc3ms/?pub=3wrehx",
+    4: "https://rumble.com/embed/v5jc6f8/?pub=3wrehx",
+    5: "https://rumble.com/embed/v5jcaft/?pub=3wrehx",
+    6: "https://rumble.com/embed/v5jchhj/?pub=3wrehx",
+    7: "https://rumble.com/embed/v5jcjdh/?pub=3wrehx",
+    8: "https://rumble.com/embed/v5jcjoq/?pub=3wrehx",
+    9: "https://rumble.com/embed/v5jdjut/?pub=3wrehx",
+    10: "https://rumble.com/embed/v5jea3t/?pub=3wrehx",
+    11: "https://rumble.com/embed/v5jejmq/?pub=3wrehx",
+    12: "https://rumble.com/embed/v5jeu5w/?pub=3wrehx",
+    13: "https://rumble.com/embed/v5jexmh/?pub=3wrehx",
+    14: "https://rumble.com/embed/v5jf7bm/?pub=3wrehx",
+    15: "https://rumble.com/embed/v5jx6kw/?pub=3wrehx",
+    16: "https://rumble.com/embed/v5jxaee/?pub=3wrehx",
+    17: "https://rumble.com/embed/v5jy7rt/?pub=3wrehx",
+    18: "https://s3taku.com/abpl1245?id=MjM0Mzk5&amp;title=One+Piece+Episode+1121&amp;typesub=SUB",
+    19: "https://s3taku.com/abpl1245?id=MjM0OTgw&title=One+Piece+Episode+1122&typesub=SUB",
+    // Add more episode URLs as needed
+  };
+
+  // Load watched episodes and last watched episode from localStorage
+  let watchedEpisodes = JSON.parse(localStorage.getItem("watchedEpisodes")) || [];
+  const lastWatchedEpisode = JSON.parse(localStorage.getItem("lastWatchedEpisode"));
+
+  // Display the last watched episode on page load
+  const currentEpisodeDisplay = document.getElementById("currentEpisode");
+  if (lastWatchedEpisode) {
+    currentEpisodeDisplay.textContent = `Current Episode: ${lastWatchedEpisode}`;
+    loadEpisode(lastWatchedEpisode);
+  }
+
+  // Highlight watched episodes on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    const episodeButtons = document.querySelectorAll('.episode-button');
+    episodeButtons.forEach((btn, index) => {
+      const episodeNumber = index + 1;
+      if (watchedEpisodes.includes(episodeNumber)) {
+        btn.classList.add('watched');
+      }
+    });
+  });
+
+  function loadEpisode(episodeNumber) {
+    const videoPlayer = document.getElementById('videoPlayer');
+    const episodeButtons = document.querySelectorAll('.episode-button');
+
+    // Update the iframe source
+    videoPlayer.src = episodes[episodeNumber];
+
+    // Update the current episode display
+    currentEpisodeDisplay.textContent = `Egghead: ${episodeNumber}`;
+
+    // Remove active class from all buttons, then add to clicked one
+    episodeButtons.forEach(btn => btn.classList.remove('active'));
+    episodeButtons[episodeNumber - 1].classList.add('active');
+
+    // Mark the episode as watched if not already watched
+    if (!watchedEpisodes.includes(episodeNumber)) {
+      watchedEpisodes.push(episodeNumber);
+      localStorage.setItem("watchedEpisodes", JSON.stringify(watchedEpisodes));
+      episodeButtons[episodeNumber - 1].classList.add('watched');
+    }
+
+    // Store the last watched episode in localStorage
+    localStorage.setItem("lastWatchedEpisode", JSON.stringify(episodeNumber));
+  }
+
+  function filterEpisodes(query) {
+    const episodeButtons = document.querySelectorAll('.episode-button');
+    episodeButtons.forEach((btn, index) => {
+      const episodeNumber = index + 1;
+      btn.style.display = episodeNumber.toString().includes(query) ? 'block' : 'none';
+    });
+  }
+</script>
+</body>
+</html>
